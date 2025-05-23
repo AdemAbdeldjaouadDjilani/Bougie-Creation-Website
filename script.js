@@ -1,108 +1,25 @@
 document.addEventListener("DOMContentLoaded", function() {
-    window.scrollTo(0, 0);  // Shkon në pozicionin më të lartë të faqes
+    window.scrollTo(0, 0);  
 });
 
 
-// Scroll Spy për të theksuar linkun aktiv në bazë të seksionit
-document.addEventListener("scroll", function() {
-    const sections = document.querySelectorAll("section");
-    const navLinks = document.querySelectorAll(".nav-link");
-
-    let currentSection = "";
-
-    sections.forEach((section) => {
-        const sectionTop = section.offsetTop;
-        if (scrollY >= sectionTop - 50) {
-            currentSection = section.getAttribute("id");
-        }
-    });
-
-    navLinks.forEach((link) => {
-        link.classList.remove("active");
-        if (link.getAttribute("href").includes(currentSection)) {
-            link.classList.add("active");
-        }
-    });
-});
-
-
-// Selektimi i elementeve të nevojshme
 const cartSection = document.getElementById('cart-section');
 const cartItemsContainer = document.getElementById('cart-items-container');
 const cartTotalPrice = document.getElementById('cart-total-price');
 
-// Lista e artikujve në shportë
-let cartItems = [];
-
-// Funksioni për shtimin e artikullit në shportë
-function addToCart(title, price) {
-    // Shto artikullin në listën e shportës
-    cartItems.push({ title, price });
-    updateCart();
-    openCart(); // Hap shportën automatikisht
-}
-
-// Funksioni për përditësimin e përmbajtjes së shportës
-function updateCart() {
-    // Pastro përmbajtjen e mëparshme
-    cartItemsContainer.innerHTML = '';
-
-    // Për çdo artikull në shportë
-    let total = 0;
-    cartItems.forEach((item, index) => {
-        total += item.price;
-
-        // Krijo një div për çdo artikull
-        const itemDiv = document.createElement('div');
-        itemDiv.classList.add('cart-item');
-        itemDiv.innerHTML = `
-            <p>${item.title} - $${item.price}</p>
-            <button onclick="removeFromCart(${index})">Remove</button>
-        `;
-        cartItemsContainer.appendChild(itemDiv);
-    });
-
-    // Përditëso totalin
-    cartTotalPrice.textContent = total.toFixed(2);
-}
-
-// Funksioni për hapjen e seksionit të shportës
-function openCart() {
-    cartSection.style.display = 'block'; // Trego seksionin e shportës
-}
-
-// Funksioni për heqjen e artikullit nga shporta
-function removeFromCart(index) {
-    cartItems.splice(index, 1); // Hiq artikullin nga lista
-    updateCart(); // Përditëso shportën
-    if (cartItems.length === 0) {
-        closeCart(); // Mbyll shportën nëse nuk ka artikuj
-    }
-}
-
-// Funksioni për mbylljen e shportës nëse nuk ka artikuj
-function closeCart() {
-    cartSection.style.display = 'none';
-}
-
-// Initialize the cart
 let cart = [];
 
-// Function to update the cart display with modern, professional UI
 function updateCart() {
     let cartSection = document.getElementById("cart-section");
 
-    // If cart section doesn't exist, create it dynamically
     if (!cartSection) {
         cartSection = document.createElement("section");
         cartSection.id = "cart-section";
         document.body.appendChild(cartSection);
     }
 
-    // Clear previous cart contents
     cartSection.innerHTML = "";
 
-    // Create the cart container with a smooth animation
     const cartContainer = document.createElement("div");
     cartContainer.id = "cart-container";
     cartContainer.style.position = "fixed";
@@ -121,7 +38,6 @@ function updateCart() {
     cartContainer.style.transition = "opacity 0.3s ease-in-out";
     cartContainer.style.animation = "cartSlideIn 0.5s ease-out";
 
-    // Create close button dynamically
     const closeButton = document.createElement("button");
     closeButton.innerHTML = "&times;";
     closeButton.style.backgroundColor = "transparent";
@@ -136,7 +52,6 @@ function updateCart() {
 
     cartContainer.appendChild(closeButton);
 
-    // If the cart is empty, show message
     if (cart.length === 0) {
         const emptyMessage = document.createElement("p");
         emptyMessage.innerText = "Your cart is empty!";
@@ -144,7 +59,6 @@ function updateCart() {
         emptyMessage.style.fontSize = "18px";
         cartContainer.appendChild(emptyMessage);
     } else {
-        // Loop through cart items and display them
         cart.forEach(item => {
             const itemDiv = document.createElement("div");
             itemDiv.classList.add("cart-item");
@@ -166,7 +80,6 @@ function updateCart() {
             cartContainer.appendChild(itemDiv);
         });
 
-        // Calculate and display total price
         const totalValue = cart.reduce((total, item) => total + item.price * item.quantity, 0);
         const totalDiv = document.createElement("div");
         totalDiv.classList.add("cart-total");
@@ -176,7 +89,6 @@ function updateCart() {
         `;
         cartContainer.appendChild(totalDiv);
 
-        // Payment methods section
         const paymentDiv = document.createElement("div");
         paymentDiv.style.marginTop = "20px";
         paymentDiv.innerHTML = `
@@ -191,7 +103,6 @@ function updateCart() {
         cartContainer.appendChild(paymentDiv);
     }
 
-    // Display the cart container with smooth fade-in
     cartSection.style.display = "flex";
     setTimeout(() => {
         cartContainer.style.opacity = "1";
@@ -200,21 +111,18 @@ function updateCart() {
     cartSection.appendChild(cartContainer);
 }
 
-// Function to adjust the quantity of an item
 function adjustQuantity(itemName, delta) {
     const item = cart.find(i => i.name === itemName);
     if (!item) return;
 
     item.quantity += delta;
     if (item.quantity <= 0) {
-        // Remove item from cart if quantity is zero or negative
         cart = cart.filter(i => i.name !== itemName);
     }
 
-    updateCart();  // Re-render cart after quantity adjustment
+    updateCart();
 }
 
-// Function to add items to the cart
 function addToCart(event) {
     const button = event.target;
     const title = button.getAttribute("data-title");
@@ -232,15 +140,14 @@ function addToCart(event) {
         });
     }
 
-    updateCart();  // Update the cart after adding an item
+    updateCart();
 }
 
-// Function to close the cart
 function closeCart() {
     const cartSection = document.getElementById("cart-section");
     if (cartSection) {
         const cartContainer = document.getElementById("cart-container");
-        cartContainer.style.opacity = "0";
+        if (cartContainer) cartContainer.style.opacity = "0";
 
         setTimeout(() => {
             cartSection.style.display = "none";
@@ -248,13 +155,44 @@ function closeCart() {
     }
 }
 
-// Function to proceed to checkout (example functionality)
 function proceedToCheckout() {
     const paymentMethod = document.getElementById("payment-method").value;
     alert(`Proceeding with ${paymentMethod}...`);
 }
 
-// Add event listeners to all "Add to Cart" buttons
 document.querySelectorAll('.shop-item-btn').forEach(button => {
     button.addEventListener('click', addToCart);
 });
+
+
+ document.querySelector('.contact-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const messageBox = document.createElement('div');
+        messageBox.textContent = "Your message has been successfully sent. We will get back to you soon.";
+        messageBox.style.position = 'fixed';
+        messageBox.style.top = '20px';
+        messageBox.style.right = '20px';
+        messageBox.style.backgroundColor = '#be8762';
+        messageBox.style.color = 'white';
+        messageBox.style.padding = '15px 50px 15px 20px';
+        messageBox.style.borderRadius = '8px';
+        messageBox.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.2)';
+        messageBox.style.zIndex = '9999';
+        messageBox.style.fontFamily = 'Arial, sans-serif';
+        messageBox.style.fontWeight = '500';
+
+        const closeBtn = document.createElement('span');
+        closeBtn.textContent = '✖';
+        closeBtn.style.position = 'absolute';
+        closeBtn.style.top = '8px';
+        closeBtn.style.right = '15px';
+        closeBtn.style.cursor = 'pointer';
+        closeBtn.style.fontSize = '18px';
+        closeBtn.style.color = 'white';
+        closeBtn.style.fontWeight = 'bold';
+
+        closeBtn.onclick = () => messageBox.remove();
+        messageBox.appendChild(closeBtn);
+        document.body.appendChild(messageBox);
+        this.reset();
+    });

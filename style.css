@@ -1338,8 +1338,8 @@ body, html {
         transform: translateY(0);
     }
     .animated-nav .nav-link {
-        font-size: 1.2rem;
-        letter-spacing: 0.2em;
+        font-size: 0.95rem;
+        letter-spacing: 0.18em;
     }
     .nav-brand {
         font-family: 'Cinzel', serif;
@@ -1356,6 +1356,26 @@ body, html {
         white-space: nowrap;
         overflow: visible;
         text-align: center;
+    }
+
+    /* Reduce hero height on mobile to remove excess gap */
+    .hero {
+        height: auto;
+        min-height: unset;
+        padding: 30px 20px 20px;
+    }
+
+    /* Reduce gap between hero and banner image */
+    .background-section {
+        margin: 10px auto 20px;
+        width: calc(100% - 24px);
+        height: 38vh;
+    }
+
+    /* Smaller nav links in mobile menu overlay */
+    .animated-nav .nav-link {
+        font-size: 1rem !important;
+        letter-spacing: 0.15em;
     }
 
     /* SHOP 2-col clean */

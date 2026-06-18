@@ -1,13 +1,62 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="gated">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bougie Creation</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
+    <script>
+        (function() {
+            const hostname = window.location.hostname;
+            const isLocal = hostname === 'localhost' || 
+                            hostname === '127.0.0.1' || 
+                            hostname.startsWith('192.168.') || 
+                            hostname.startsWith('10.') || 
+                            hostname.startsWith('172.16.') || 
+                            window.location.protocol === 'file:';
+            if (isLocal) {
+                document.documentElement.classList.remove('gated');
+            }
+        })();
+    </script>
 </head>
 <body>
+
+<!-- COMING SOON GATE -->
+<div id="coming-soon-gate" class="coming-soon-container">
+    <div class="cs-content">
+        <div class="cs-logo-container">
+            <div id="cs-candle-3d-container" class="cs-candle-3d"></div>
+            <span class="cs-candle-fallback">🕯</span>
+        </div>
+        <h1 class="cs-brand-title">Bougie Creation</h1>
+        <p class="cs-divider">────── 🕯 ──────</p>
+        <p class="cs-subtitle">Under Construction · قيد الإنشاء</p>
+        <p class="cs-description">
+            We are crafting a luxury sensory experience. A world of handcrafted candles, elegant light, and delicate scents is coming soon.
+        </p>
+
+        <!-- Newsletter Subscription -->
+        <form id="cs-subscription-form" class="cs-form">
+            <input type="email" id="cs-email" placeholder="Enter your email to get notified" required>
+            <button type="submit" class="cs-submit-btn">Notify Me</button>
+        </form>
+        <div id="cs-form-feedback" class="cs-feedback-message"></div>
+
+        <!-- Social Links & Contact -->
+        <div class="cs-contact-info">
+            <p>Reach us at: <a href="mailto:djilaniassala30@gmail.com">djilaniassala30@gmail.com</a> | +213555847638</p>
+            <div class="cs-socials">
+                <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+                <a href="#" aria-label="Pinterest"><i class="fab fa-pinterest-p"></i></a>
+                <a href="#" aria-label="TikTok"><i class="fab fa-tiktok"></i></a>
+            </div>
+        </div>
+    </div>
+</div>
+
 
 <!-- PAGE LOADER -->
 <div class="page-loader" id="page-loader">

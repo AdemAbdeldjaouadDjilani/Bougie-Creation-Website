@@ -115,6 +115,12 @@ function animateTitleLetters() {
 // SCROLL TO TOP ON LOAD
 // ============================
 document.addEventListener("DOMContentLoaded", function () {
+    // If gated, initialize only coming soon handlers and exit early
+    if (document.documentElement.classList.contains('gated')) {
+        initComingSoon();
+        return;
+    }
+
     window.scrollTo(0, 0);
 
     // Use the loader already in HTML
@@ -1349,3 +1355,212 @@ function setupAmbientSound() {
         }
     });
 }
+
+// ============================
+// COMING SOON SUBSCRIPTION
+// ============================
+function initComingSoon() {
+    // Initialize 3D Candle
+    initComingSoon3DCandle();
+
+    const form = document.getElementById('cs-subscription-form');
+    const feedback = document.getElementById('cs-form-feedback');
+    if (!form || !feedback) return;
+
+    form.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const emailInput = document.getElementById('cs-email');
+        const submitBtn = form.querySelector('.cs-submit-btn');
+        if (!emailInput || !submitBtn) return;
+
+        const email = emailInput.value.trim();
+        if (!email) return;
+
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Sending...';
+        feedback.className = 'cs-feedback-message';
+        feedback.textContent = '';
+
+        const subscriptionData = {
+            timestamp: new Date().toLocaleString('fr-DZ'),
+            email: email,
+            type: 'Newsletter/Coming Soon Subscription'
+        };
+
+        try {
+            if (typeof GOOGLE_SCRIPT_URL !== 'undefined' && GOOGLE_SCRIPT_URL && GOOGLE_SCRIPT_URL !== 'YOUR_GOOGLE_APPS_SCRIPT_URL_HERE') {
+                await fetch(GOOGLE_SCRIPT_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(subscriptionData)
+                });
+            } else {
+                // Mock success for local testing or if sheets URL is not configured
+                console.log('Mock saving subscription:', subscriptionData);
+                await new Promise(resolve => setTimeout(resolve, 800));
+            }
+
+            feedback.className = 'cs-feedback-message success';
+            feedback.textContent = '✓ Thank you! We will notify you when we go live.';
+            emailInput.value = '';
+        } catch (err) {
+            console.error('Error submitting newsletter subscription:', err);
+            feedback.className = 'cs-feedback-message error';
+            feedback.textContent = '✗ Something went wrong. Please try again.';
+        } finally {
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Notify Me';
+        }
+    });
+}
+
+// ============================
+// COMING SOON 3D CANDLE
+// ============================
+function initComingSoon3DCandle() {
+    const container = document.getElementById('cs-candle-3d-container');
+    const logoContainer = document.querySelector('.cs-logo-container');
+    if (!container) return;
+
+    const width = container.clientWidth || 200;
+    const height = container.clientHeight || 200;
+
+    const scene = new THREE.Scene();
+    
+    // Camera
+    const camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 100);
+    camera.position.set(0, 0.9, 2.8);
+    camera.lookAt(0, 0, 0);
+
+    // Renderer
+    const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+    renderer.setSize(width, height);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.shadowMap.enabled = true;
+    container.appendChild(renderer.domElement);
+
+    if (logoContainer) {
+        logoContainer.classList.add('loaded');
+    }
+
+    // Lights
+    scene.add(new THREE.AmbientLight(0xffffff, 0.6));
+    
+    const keyLight = new THREE.DirectionalLight(0xfffdf0, 0.8);
+    keyLight.position.set(-2, 3, 2);
+    scene.add(keyLight);
+
+    const fillLight = new THREE.DirectionalLight(0xadd8e6, 0.4);
+    fillLight.position.set(2, 2, -1);
+    scene.add(fillLight);
+
+    // Candle Group
+    const candleGroup = new THREE.Group();
+    scene.add(candleGroup);
+
+    // Glass Jar (Semi-transparent luxury jar)
+    const jarGeom = new THREE.CylinderGeometry(0.42, 0.42, 0.9, 32);
+    const jarMat = new THREE.MeshStandardMaterial({
+        color: 0x2a1f1a, // Dark amber glass
+        roughness: 0.1,
+        metalness: 0.9,
+        transparent: true,
+        opacity: 0.4,
+        side: THREE.DoubleSide
+    });
+    const jarMesh = new THREE.Mesh(jarGeom, jarMat);
+    jarMesh.position.y = -0.1;
+    candleGroup.add(jarMesh);
+
+    // Candle Wax inside the jar
+    const waxGeom = new THREE.CylinderGeometry(0.39, 0.39, 0.7, 32);
+    const waxMat = new THREE.MeshStandardMaterial({
+        color: 0xdfbca7, // Cream wax
+        roughness: 0.6,
+        metalness: 0.1
+    });
+    const waxMesh = new THREE.Mesh(waxGeom, waxMat);
+    waxMesh.position.y = -0.18;
+    candleGroup.add(waxMesh);
+
+    // Wick
+    const wickGeom = new THREE.CylinderGeometry(0.012, 0.012, 0.12, 8);
+    const wickMat = new THREE.MeshStandardMaterial({ color: 0x222222, roughness: 0.9 });
+    const wickMesh = new THREE.Mesh(wickGeom, wickMat);
+    wickMesh.position.y = 0.22;
+    candleGroup.add(wickMesh);
+
+    // Flame Group
+    const flameGroup = new THREE.Group();
+    flameGroup.position.set(0, 0.3, 0);
+    candleGroup.add(flameGroup);
+
+    // Inner Flame (White core)
+    const flameCoreGeom = new THREE.SphereGeometry(0.05, 16, 16);
+    flameCoreGeom.translate(0, 0.05, 0);
+    const flameCore = new THREE.Mesh(flameCoreGeom, new THREE.MeshBasicMaterial({ color: 0xffffff }));
+    flameCore.scale.set(1, 2.5, 1);
+    flameGroup.add(flameCore);
+
+    // Outer Flame (Warm orange glow)
+    const flameOuterGeom = new THREE.SphereGeometry(0.08, 16, 16);
+    flameOuterGeom.translate(0, 0.08, 0);
+    const flameOuter = new THREE.Mesh(flameOuterGeom, new THREE.MeshBasicMaterial({
+        color: 0xff6600,
+        transparent: true,
+        opacity: 0.75,
+        blending: THREE.AdditiveBlending
+    }));
+    flameOuter.scale.set(1.1, 2.8, 1.1);
+    flameGroup.add(flameOuter);
+
+    // Light source from the flame
+    const flameLight = new THREE.PointLight(0xffaa44, 2.5, 6, 1.2);
+    flameLight.position.set(0, 0.1, 0);
+    flameGroup.add(flameLight);
+
+    // Animation variables
+    const clock = new THREE.Clock();
+    let mouseX = 0, mouseY = 0;
+    let targetRotationX = 0, targetRotationY = 0;
+
+    // Mouse tilt interaction
+    window.addEventListener('mousemove', (e) => {
+        const rect = container.getBoundingClientRect();
+        const cx = rect.left + rect.width / 2;
+        const cy = rect.top + rect.height / 2;
+        mouseX = (e.clientX - cx) / (window.innerWidth / 2);
+        mouseY = (e.clientY - cy) / (window.innerHeight / 2);
+        
+        targetRotationY = mouseX * 0.4;
+        targetRotationX = mouseY * 0.3;
+    });
+
+    function animate() {
+        requestAnimationFrame(animate);
+        const time = clock.getElapsedTime();
+
+        // Smoothly orbit/auto-rotate
+        candleGroup.rotation.y += 0.008;
+
+        // Apply mouse tilt response
+        candleGroup.rotation.y += (targetRotationY - (candleGroup.rotation.y % (Math.PI * 2))) * 0.05;
+        candleGroup.rotation.x += (targetRotationX - candleGroup.rotation.x) * 0.05;
+
+        // Floating animation
+        candleGroup.position.y = Math.sin(time * 1.5) * 0.08;
+
+        // Flicker flame scale
+        const scaleFlicker = 1.0 + Math.sin(time * 30) * 0.06 + Math.cos(time * 60) * 0.03;
+        flameGroup.scale.set(scaleFlicker, scaleFlicker * (1.0 + Math.sin(time * 20) * 0.05), scaleFlicker);
+        
+        // Flicker light intensity
+        flameLight.intensity = 2.2 + Math.sin(time * 25) * 0.3 + Math.cos(time * 50) * 0.1;
+
+        renderer.render(scene, camera);
+    }
+
+    animate();
+}
+

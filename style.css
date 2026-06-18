@@ -1966,3 +1966,60 @@ html:not(.gated) #coming-soon-gate {
     display: none !important;
 }
 
+/* Responsive Coming Soon Gate */
+@media (max-width: 480px) {
+    .coming-soon-container {
+        padding: 30px 16px;
+        justify-content: flex-start; /* Prevent top-clipping on smaller mobile viewports */
+    }
+    
+    .cs-content {
+        padding: 10px 0;
+    }
+    
+    .cs-logo-container {
+        width: 150px;
+        height: 150px;
+        margin-bottom: 12px;
+    }
+    
+    .cs-brand-title {
+        font-size: clamp(2rem, 5vw, 2.5rem);
+    }
+    
+    .cs-divider {
+        margin-bottom: 15px;
+    }
+    
+    .cs-subtitle {
+        font-size: 0.85rem;
+        margin-bottom: 12px;
+    }
+    
+    .cs-description {
+        font-size: 1.1rem;
+        line-height: 1.6;
+        margin-bottom: 25px;
+    }
+    
+    .cs-form {
+        flex-direction: column;
+        gap: 12px;
+        margin-bottom: 25px;
+    }
+    
+    .cs-form input {
+        width: 100%;
+        text-align: center;
+    }
+    
+    .cs-submit-btn {
+        width: 100%;
+    }
+    
+    .cs-feedback-message {
+        margin-top: -15px;
+        margin-bottom: 20px;
+    }
+}
+
